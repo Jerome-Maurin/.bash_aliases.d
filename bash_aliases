@@ -7,10 +7,9 @@ then
     source $i
   done
 #Load host-specific .bash files
-  hn=$(hostname)
-  if [ -d $hn ]
+  if [ -d  ~/.bash_aliases.d/$HOSTNAME ]
   then
-    for j in ~/.bash_aliases.d/$hn/*.bash
+    for j in ~/.bash_aliases.d/$HOSTNAME/*.bash
     do
       source $j
     done
