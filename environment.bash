@@ -1,5 +1,5 @@
 #PS1 or advanced git version customization
-if type git
+if type git > /dev/null 2>&1
 then
   GIT_PS1_SHOWDIRTYSTATE=true
   GIT_PS1_SHOWSTASHSTATE=true
