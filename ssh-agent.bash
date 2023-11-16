@@ -21,5 +21,5 @@ load_ssh-agent()
 
   echo "List of active keys :"
 
-  ssh-add -l
+  ssh-add -L
 }
