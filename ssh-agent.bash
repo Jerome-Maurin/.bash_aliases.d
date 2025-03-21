@@ -1,27 +1,30 @@
 # Works only with BASH
 load_ssh-agent()
 {
-  if ! agents=($(pgrep -x ssh-agent))
+  set -o pipefail
+
+  if ! agents=("$(pgrep -x ssh-agent)")
   then
     echo "No ssh-agent instance detected."
     echo "Starting one."
-    eval $(ssh-agent)
+    eval "$(ssh-agent || true)"
   else
-    if [ ${#agents[@]} -gt 1 ];
+    if [[ ${#agents[@]} -gt 1 ]];
     then
       echo "More than one ssh-agent instance are already running !"
       echo "Please clean-up your system manually. Aborting ..."
       return 1
     else
-      if cmdlne=($(pgrep -x ssh-agent -a | grep -- \ -a))
+      if cmdlne=("$(pgrep -x ssh-agent -a | grep -- \ -a)")
       then
         for ((n=0; n<${#cmdlne[@]}; n++))
         do
-          if [ "${cmdlne[$n]}" = "-a" ]
+          if [[ "${cmdlne[${n}]}" = "-a" ]]
           then
-            if [ $n -lt $((${#cmdlne[@]} - 1)) ]
+            if [[ ${n} -lt $((${#cmdlne[@]} - 1)) ]]
             then
-              export SSH_AUTH_SOCK="${cmdlne[$(($n + 1))]}"
+              SSH_AUTH_SOCK="${cmdlne[$((n + 1))]}"
+              export SSH_AUTH_SOCK
             else
               echo "Wrong parameters for ssh-agent found !"
             fi
@@ -29,9 +32,11 @@ load_ssh-agent()
           fi
         done
       else
-        export SSH_AUTH_SOCK=$(compgen -G /tmp/ssh-*/agent.*)
+        SSH_AUTH_SOCK=$(compgen -G /tmp/ssh-*/agent.*)
+        export SSH_AUTH_SOCK
       fi
-      export SSH_AGENT_PID=$agents
+      SSH_AGENT_PID=${agents[1]}
+      export SSH_AGENT_PID
       echo "List of active keys :"
     fi
   fi
@@ -42,4 +47,6 @@ load_ssh-agent()
     ssh-add
     ssh-add -L
   fi
+
+  set +o pipefail
 }
