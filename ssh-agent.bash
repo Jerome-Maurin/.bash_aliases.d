@@ -32,7 +32,7 @@ load_ssh-agent()
           fi
         done
       else
-        SSH_AUTH_SOCK=$(compgen -G /tmp/ssh-*/agent.*)
+        SSH_AUTH_SOCK=$(compgen -G $TMPDIR/ssh-*/agent.*)
         export SSH_AUTH_SOCK
       fi
       SSH_AGENT_PID=${agents[1]}
