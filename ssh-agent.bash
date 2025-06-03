@@ -32,6 +32,10 @@ load_ssh-agent()
           fi
         done
       else
+        if [ -z "$TMPDIR" ]
+        then
+          TMPDIR="/tmp"
+        fi
         SSH_AUTH_SOCK=$(compgen -G $TMPDIR/ssh-*/agent.*)
         export SSH_AUTH_SOCK
       fi
