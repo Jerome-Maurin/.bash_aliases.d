@@ -3,6 +3,7 @@ load_ssh-agent()
 {
   set -o pipefail
 
+# Only use the ssh-agent command (-x param), not something else (gcr-ssh-agent, etc.)
   if ! agents=("$(pgrep -x ssh-agent)")
   then
     echo "No ssh-agent instance detected."
@@ -34,9 +35,14 @@ load_ssh-agent()
       else
         if [ -z "$TMPDIR" ]
         then
+# As specified in the man page of ssh-agent :
           TMPDIR="/tmp"
         fi
-        SSH_AUTH_SOCK=$(compgen -G $TMPDIR/ssh-*/agent.*)
+        if ! SSH_AUTH_SOCK=$(compgen -G $TMPDIR/ssh-*/agent.*)
+        then
+# In case the ssh-agent was started without $TMPDIR defined
+          SSH_AUTH_SOCK=$(compgen -G /tmp/ssh-*/agent.*)
+        fi
         export SSH_AUTH_SOCK
       fi
       SSH_AGENT_PID=${agents[1]}
